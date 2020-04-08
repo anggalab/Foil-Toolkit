@@ -1,9 +1,19 @@
-from airfoilplot import airfoil_plot
-from airfoilplot import naca
+from naca import naca
 from dxfwrite import DXFEngine as dxf
 import numpy as np
 
-def airfoil(profNaca = ['6409'], nPoints = 240, finite_TE = False, half_cosine_spacing = False):
+file_input = open('config.cfg', mode='r')
+type_line = file_input.readlines()
+read_type = type_line[0]
+read_node = type_line[0]
+fileNaca = read_type.replace('\n', '')
+fileNode = read_node.replace('\n', '')
+
+nPoints = fileNode
+profNaca = [fileNaca]
+naca_type = len(profNaca)
+
+def airfoil(profNaca = profNaca, nPoints = nPoints, finite_TE = False, half_cosine_spacing = False):
     for i,p in enumerate(profNaca):
         X,Y = naca(p, nPoints, finite_TE, half_cosine_spacing)
     return X, Y
@@ -15,7 +25,19 @@ def txt():
     zipxy = zip(X,Y)
     textxy = list(zipxy)
 
-    with open('export/airfoil_coord.txt', 'w') as txt_file:
+    with open('airfoil_coord.txt', 'w') as txt_file:
+        for item in textxy:
+            txt_file.write("%s %s\n" % item)
+
+def flt():
+
+    X, Y = airfoil()
+    txty = list(Y)
+    txtx = list(X)
+    zipxy = zip(X,Y)
+    textxy = list(zipxy)
+
+    with open('airfoil_project.flt', 'w') as txt_file:
         for item in textxy:
             txt_file.write("%s %s\n" % item)
 
@@ -26,7 +48,7 @@ def csv():
     zipxy = zip(X,Y)
     textxy = list(zipxy)
 
-    with open('export/airfoil_coord.csv', 'w') as txt_file:
+    with open('airfoil_coord.csv', 'w') as txt_file:
         for item in textxy:
             txt_file.write("%s; %s\n" % item)
 
@@ -37,18 +59,18 @@ def dat():
     zipxy = zip(X,Y)
     textxy = list(zipxy)
 
-    with open('export/airfoil_coord.dat', 'w') as txt_file:
+    with open('airfoil_coord.dat', 'w') as txt_file:
         for item in textxy:
             txt_file.write("%s %s\n" % item)
 
-def excel():
+def xls():
     X, Y = airfoil()
     txty = list(Y)
     txtx = list(X)
     zipxy = zip(X,Y)
     textxy = list(zipxy)
 
-    with open('export/airfoil_coord.xls', 'w') as txt_file:
+    with open('airfoil_coord.xls', 'w') as txt_file:
         for item in textxy:
             txt_file.write("%s %s\n" % item)
 
@@ -59,13 +81,10 @@ def dxfe():
     zipxy = zip(X,Y)
     textxy = list(zipxy)
 
-    name = 'export/airfoil_draft.dxf'
+    name = 'airfoil_draft.dxf'
     dwg = dxf.drawing(name)
     spline_points = textxy
     dwg.add(dxf.spline(spline_points, color=7))
     for point in spline_points:
         dwg.add(dxf.circle(radius=0, center=point, color=1))
     dwg.save()
-
-if __name__=="__main__":
-    dxfe()
