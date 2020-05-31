@@ -14,26 +14,21 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from naca import naca
-
-from export import dat
-from export import csv
-from export import txt
-from export import xls
-from export import dxfe
-from export import flt
+from funct import airfoil_funct
 
 class MainWindow(QMainWindow):
+    
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.title = 'Foil Toolkit'
         self.width = 500
         self.height = 500
         self.setFixedSize(self.size())
-        self.setWindowIcon(QIcon('img/icon.jpg'))
+        self.setWindowIcon(QIcon('img/logo.png'))
         self.plotcanvas()
         self.component()
         self.centerwindow()
-    
+        
     def inputwindowform(self):
         self.input_window = InputWindow()
         self.input_window.show()
@@ -45,7 +40,7 @@ class MainWindow(QMainWindow):
     def plotcanvas(self):
         self.setWindowTitle(self.title)
         self.setGeometry(0, 0, self.width, self.height)
-        m = PlotCanvas(self)
+        m = FoilCanvas(self)
         m.move(0, 0)
         self.show()
 
@@ -57,7 +52,6 @@ class MainWindow(QMainWindow):
 
     def CreateMenus(self):
         self.fileMenu = self.menuBar().addMenu("&File")
-        self.viewMenu = self.menuBar().addMenu("&View")
         self.optionMenu = self.menuBar().addMenu("&Foil")
         self.helpMenu = self.menuBar().addMenu("&Help")
 
@@ -66,108 +60,133 @@ class MainWindow(QMainWindow):
         self.CreateMenus()
         self.CreateToolBar()
 
-        self.fileMenu.addAction(self.openAction)
-        self.fileMenu.addAction(self.saveAction)
-
-        self.export = self.fileMenu.addMenu(QIcon('img/other.png'), "Export")
-        self.export.addAction(self.DatAction)
+        self.export = self.fileMenu.addMenu(QIcon('img/export.png'), "Export")
         self.export.addAction(self.DxfAction)
         self.export.addAction(self.DatAction)
         self.export.addAction(self.TxtAction)
         self.export.addAction(self.CsvAction)
+        self.export.addAction(self.CfgAction)
         self.export.addAction(self.XlsAction)
 
-        self.imp = self.fileMenu.addMenu(QIcon('img/other.png'), "Import")
-        self.imp.addAction(self.TxtImport)
-        self.imp.addAction(self.DatImport)
-
-        self.fileMenu.addSeparator()
         self.fileMenu.addAction(self.exitAction)
+
         self.optionMenu.addAction(self.inputAction)
+        self.optionMenu.addSeparator()
         self.optionMenu.addAction(self.propertiesAction)
-        self.viewMenu.addAction(self.logAction)
-        
-        self.fileMenu.addSeparator()
+
         self.helpMenu.addAction(self.aboutAction)
 
         self.mainToolBar.addAction(self.DxfAction)
         self.mainToolBar.addAction(self.TxtAction)
         self.mainToolBar.addAction(self.DatAction)
-        
+        self.mainToolBar.addAction(self.CfgAction)
+        self.mainToolBar.addAction(self.CsvAction)
+        self.mainToolBar.addAction(self.XlsAction)
         self.mainToolBar.addSeparator()
-        self.mainToolBar.addAction(self.logAction)
+        self.mainToolBar.addAction(self.inputAction)
+        self.mainToolBar.addAction(self.propertiesAction)
 
     def CreateActions(self):
-        self.openAction = QAction( QIcon('img/open.png'), '&Open', self, shortcut=QKeySequence.New, statusTip="Create a New File", triggered=self.openFile)
-        self.saveAction = QAction( QIcon('img/save.png'), '&Save', self, shortcut=QKeySequence.New, statusTip="Create a New File", triggered=self.saveFile)
-        self.exitAction = QAction( QIcon('img/exit.png'), 'E&xit', self, shortcut="Ctrl+Q", statusTip="Exit the Application", triggered=self.exitFile)
-        self.aboutAction = QAction( QIcon('img/about.png'), 'A&bout', self, statusTip="Displays info about text editor", triggered=self.showAbout)
-        self.DatAction = QAction( QIcon('img/dat.png'), 'dat', self, statusTip="Save the current file to disk", triggered=self.DatExport)
-        self.TxtAction = QAction( QIcon('img/txt.png'), 'txt', self, statusTip="Save the current file to disk", triggered=self.TxtExport)
-        self.DxfAction = QAction( QIcon('img/dxf.png'), 'dxf', self, statusTip="Save the current file to disk", triggered=self.DxfExport)
-        self.CsvAction = QAction( QIcon('img/csv.png'), 'csv', self, statusTip="Save the current file to disk", triggered=self.CsvExport)
-        self.XlsAction = QAction( QIcon('img/xls.png'), 'xls', self, statusTip="Save the current file to disk", triggered=self.XlsExport)
-        self.cutAction = QAction( QIcon('img/cut.png'), 'C&ut', self, statusTip="Cut the current selection to clipboard")
-        self.logAction = QAction( QIcon('img/log.png'),'Log', self, statusTip="Redo previous action", triggered=self.logView)
-        self.inputAction = QAction( QIcon('img/input.png'),'Input', self, statusTip="Redo previous action", triggered=self.inputwindowform)
-        self.propertiesAction = QAction( QIcon('img/properties.png'),'Properties', self, statusTip="Redo previous action", triggered=self.propertiesform)
-        self.DatImport = QAction( QIcon('img/dat.png'),'dat', self, statusTip="Redo previous action", triggered=self.DatImport)
-        self.TxtImport = QAction( QIcon('img/txt.png'),'txt', self, statusTip="Redo previous action", triggered=self.TxtImport)
-    
-    def DatImport(self):
-        self.fileName, self.filterName = QFileDialog.getOpenFileName(self)
-        self.textEdit.setText(open(self.fileName).read())
-
-    def TxtImport(self):
-        self.fileName, self.filterName = QFileDialog.getOpenFileName(self)
-        self.textEdit.setText(open(self.fileName).read())
-
-    def logView(self):
-        self.log_window = LogWindow()
-        self.log_window.show()
-
+        self.exitAction = QAction( QIcon('img/exit.png'), 'Exit', self, shortcut="Ctrl+Q", statusTip="exit", triggered=self.exitFile)
+        self.aboutAction = QAction( QIcon('img/about.png'), 'About', self, statusTip="about Foil Toolkit", triggered=self.showAbout)
+        self.DatAction = QAction( QIcon('img/dat.png'), 'dat', self, statusTip="save as dat file", triggered=self.DatExport)
+        self.CfgAction = QAction( QIcon('img/cfg.png'), 'cfg', self, statusTip="save as configuration file..", triggered=self.CfgExport)
+        self.TxtAction = QAction( QIcon('img/txt.png'), 'txt', self, statusTip="save as text file", triggered=self.TxtExport)
+        self.DxfAction = QAction( QIcon('img/dxf.png'), 'dxf', self, statusTip="save as 2D Autodesk file", triggered=self.DxfExport)
+        self.CsvAction = QAction( QIcon('img/csv.png'), 'csv', self, statusTip="save as comma separate value or csv file..", triggered=self.CsvExport)
+        self.XlsAction = QAction( QIcon('img/xls.png'), 'xls', self, statusTip="save as excel..", triggered=self.XlsExport)
+        self.inputAction = QAction( QIcon('img/input.png'),'Input', self, shortcut="Ctrl+I", statusTip="input naca type and amount of points", triggered=self.inputwindowform)
+        self.propertiesAction = QAction( QIcon('img/properties.png'),'Properties', self, statusTip="show project properties", triggered=self.propertiesform)
+        
     def DatExport(self):
-        dat()
+        savedlg1, savedlg2 = QFileDialog.getSaveFileName(self, 'save files..', 'D:\other', '*.dat')
+        X, Y = airfoil_funct()
+        txty = list(Y)
+        txtx = list(X)
+        zipxy = zip(X,Y)
+        textxy = list(zipxy)
+
+        with open(savedlg1, 'w') as txt_file:
+            for item in textxy:
+                txt_file.write("%s %s\n" % item)
 
     def TxtExport(self):
-        txt()
+        savedlg1, savedlg2 = QFileDialog.getSaveFileName(self, 'save files..', 'D:\other', '*.txt')
+        X, Y = airfoil_funct()
+        txty = list(Y)
+        txtx = list(X)
+        zipxy = zip(X,Y)
+        textxy = list(zipxy)
+
+        with open(savedlg1, 'w') as txt_file:
+            for item in textxy:
+                txt_file.write("%s %s\n" % item)
 
     def DxfExport(self):
-        dxfe()
+        savedlg1, savedlg2 = QFileDialog.getSaveFileName(self, 'save files..', 'D:\other', '*.dxf')
+        X, Y = airfoil_funct()
+        txty = list(Y)
+        txtx = list(X)
+        zipxy = zip(X,Y)
+        textxy = list(zipxy)
+
+        with open(savedlg1, 'w') as txt_file:
+            for item in textxy:
+                txt_file.write("%s %s\n" % item)
 
     def CsvExport(self):
-        csv()
+        savedlg1, savedlg2 = QFileDialog.getSaveFileName(self, 'save files..', 'D:\other', '*.csv')
+        X, Y = airfoil_funct()
+        txty = list(Y)
+        txtx = list(X)
+        zipxy = zip(X,Y)
+        textxy = list(zipxy)
+
+        with open(savedlg1, 'w') as txt_file:
+            for item in textxy:
+                txt_file.write("%s %s\n" % item)
 
     def XlsExport(self):
-        xls()
+        savedlg1, savedlg2 = QFileDialog.getSaveFileName(self, 'save files..', 'D:\other', '*.xls')
+        X, Y = airfoil_funct()
+        txty = list(Y)
+        txtx = list(X)
+        zipxy = zip(X,Y)
+        textxy = list(zipxy)
 
-    def newFile(self):
-        print("Test New Projects")
+        with open(savedlg1, 'w') as txt_file:
+            for item in textxy:
+                txt_file.write("%s %s\n" % item)
+
+    def CfgExport(self):
+        savedlg1, savedlg2 = QFileDialog.getSaveFileName(self, 'save files..', 'D:\other', '*.cfg')
+        
+        X, Y = airfoil_funct()
+        txty = list(Y)
+        txtx = list(X)
+        zipxy = zip(X,Y)
+        textxy = list(zipxy)
+
+        with open(savedlg1, 'w') as txt_file:
+            for item in textxy:
+                txt_file.write("%s %s\n" % item)
 
     def exitFile(self):
         self.close()
-
-    def openFile(self):
-        self.fileName, self.filterName = QFileDialog.getOpenFileName(self)
-        self.textEdit.setText(open(self.fileName).read())
-
-    def saveFile(self):
-        self.fileName, self.filterName = QFileDialog.getSaveFileName(self)
-
+        
     def CreateToolBar(self):
         self.mainToolBar = self.addToolBar('Main')
 
     def showAbout(self):
-        QMessageBox.about(self, "about",  "Foil Toolkit v0.1.1 is open source airfoil plot generator\nIt's running on Windows and Linux environment \nDistribution and modification under GNU GPLv3 License\nReach author on contact@anggalab.com")
+        QMessageBox.about(self, "about",  "Foil Toolkit v0.1.3 is open source airfoil plot generator\nIt's running on Windows and Linux environment. \nDistribution and modification under GNU GPLv3 License")
 
 class InputWindow(QDialog):
     def __init__(self):
         super(InputWindow, self).__init__()
         self.setFixedSize(220,180)
         self.setWindowTitle('NACA Input')
-
+        
         layout = QVBoxLayout()
-
         self.labelnaca = QLabel("NACA Type")
         self.labelnaca.show()
         layout.addWidget(self.labelnaca)
@@ -209,9 +228,19 @@ class InputWindow(QDialog):
     def input_naca_type(self):
         input_naca_text = self.nacainput.text()
         input_point_text = self.pointinput.text()
+
+        X, Y = airfoil_funct()
+        txty = list(Y)
+        txtx = list(X)
+        zipxy = zip(X,Y)
+        textxy = list(zipxy)
+
         with open('config.cfg', 'w') as txt_file:
             txt_file.write("%s\n" % input_naca_text)
-            txt_file.write("%s" % input_point_text)
+            txt_file.write("%s\n" % input_point_text)
+
+            for item in textxy:
+                txt_file.write("%s %s\n" % item)
         txt_file.close()
 
 class PropertiesWindow(QDialog):
@@ -224,7 +253,6 @@ class PropertiesWindow(QDialog):
             naca_properties = txt_file.read()
 
         layout = QVBoxLayout()
-
         self.naca_prop = QTextEdit(naca_properties)
         self.naca_prop.show()
         layout.addWidget(self.naca_prop)
@@ -232,25 +260,7 @@ class PropertiesWindow(QDialog):
         self.setLayout(layout)
         self.show()
 
-class LogWindow(QDialog):
-    def __init__(self):
-        super(LogWindow, self).__init__()
-        self.setFixedSize(500,450)
-        self.setWindowTitle('Log')
-
-        with open('data\data.log', 'r') as txt_file:
-            naca_properties = txt_file.read()
-
-        layout = QVBoxLayout()
-
-        self.naca_prop = QTextEdit(naca_properties)
-        self.naca_prop.show()
-        layout.addWidget(self.naca_prop)
-
-        self.setLayout(layout)
-        self.show()
-
-class PlotCanvas(FigureCanvas):
+class FoilCanvas(FigureCanvas):
     def __init__(self, parent=None):
         fig = Figure(figsize=(6.4, 5), dpi=100)
         self.axes = fig.add_subplot(111)
@@ -266,9 +276,8 @@ class PlotCanvas(FigureCanvas):
         read_type = type_line[0]
         read_node = type_line[0]
         fileNaca = read_type.replace('\n', '')
-        fileNode = read_node.replace('\n', '')
+        nPoints = read_node.replace('\n', '')
 
-        nPoints = fileNode
         profNaca = [fileNaca]
         naca_type = len(profNaca)
 
@@ -277,6 +286,8 @@ class PlotCanvas(FigureCanvas):
         for i,p in enumerate(profNaca):
             X,Y = naca(p, nPoints, finite_TE, half_cosine_spacing)
             ax.plot(X, Y, naca_type)
+            ax.get_xaxis().set_visible(False)
+            ax.get_yaxis().set_visible(False)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
