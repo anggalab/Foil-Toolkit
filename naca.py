@@ -186,33 +186,3 @@ def naca(number, n, finite_TE = False, half_cosine_spacing = False):
         return naca4(number, n, finite_TE, half_cosine_spacing)
     elif len(number)==5:
         return naca5(number, n, finite_TE, half_cosine_spacing)
-    else:
-        raise Exception
-
-class Display(object):
-    def __init__(self):
-        self.ploting = ploting
-        self.h = []
-        self.label = []
-        self.fig, self.ax = self.ploting.subplots()
-        self.ploting.axis('equal')
-        self.ploting.xlabel('x')
-        self.ploting.ylabel('y')
-        self.ax.grid(True)
-
-    def plot(self, X, Y, label=''):
-        h, = self.ploting.plot(X, Y, '-', linewidth = 1)
-        self.h.append(h)
-        self.label.append(label)
-
-    def show(self):
-        self.ploting.axis((-0.1,1.1)+self.ploting.axis()[2:])
-        self.ax.legend(self.h, self.label)
-        self.ploting.show()
-
-def airfoil_plot(profNaca = ['6409'], nPoints = 240, finite_TE = False, half_cosine_spacing = False):
-    d = Display()
-    for i,p in enumerate(profNaca):
-        X,Y = naca(p, nPoints, finite_TE, half_cosine_spacing)
-        d.plot(X, Y, p)
-    d.show()
