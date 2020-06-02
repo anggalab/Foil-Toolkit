@@ -99,7 +99,7 @@ class MainWindow(QMainWindow):
         self.propertiesAction = QAction( QIcon('img/properties.png'),'Properties', self, statusTip="show project properties", triggered=self.propertiesform)
         
     def DatExport(self):
-        savedlg1, savedlg2 = QFileDialog.getSaveFileName(self, 'save files..', 'D:\other', '*.dat')
+        savedlg1, savedlg2 = QFileDialog.getSaveFileName(self, 'save files..', '', '*.dat')
         X, Y = airfoil_funct()
         txty = list(Y)
         txtx = list(X)
@@ -111,7 +111,7 @@ class MainWindow(QMainWindow):
                 txt_file.write("%s %s\n" % item)
 
     def TxtExport(self):
-        savedlg1, savedlg2 = QFileDialog.getSaveFileName(self, 'save files..', 'D:\other', '*.txt')
+        savedlg1, savedlg2 = QFileDialog.getSaveFileName(self, 'save files..', '', '*.txt')
         X, Y = airfoil_funct()
         txty = list(Y)
         txtx = list(X)
@@ -123,7 +123,7 @@ class MainWindow(QMainWindow):
                 txt_file.write("%s %s\n" % item)
 
     def DxfExport(self):
-        savedlg1, savedlg2 = QFileDialog.getSaveFileName(self, 'save files..', 'D:\other', '*.dxf')
+        savedlg1, savedlg2 = QFileDialog.getSaveFileName(self, 'save files..', '', '*.dxf')
         X, Y = airfoil_funct()
         txty = list(Y)
         txtx = list(X)
@@ -135,7 +135,7 @@ class MainWindow(QMainWindow):
                 txt_file.write("%s %s\n" % item)
 
     def CsvExport(self):
-        savedlg1, savedlg2 = QFileDialog.getSaveFileName(self, 'save files..', 'D:\other', '*.csv')
+        savedlg1, savedlg2 = QFileDialog.getSaveFileName(self, 'save files..', '', '*.csv')
         X, Y = airfoil_funct()
         txty = list(Y)
         txtx = list(X)
@@ -147,7 +147,7 @@ class MainWindow(QMainWindow):
                 txt_file.write("%s %s\n" % item)
 
     def XlsExport(self):
-        savedlg1, savedlg2 = QFileDialog.getSaveFileName(self, 'save files..', 'D:\other', '*.xls')
+        savedlg1, savedlg2 = QFileDialog.getSaveFileName(self, 'save files..', '', '*.xls')
         X, Y = airfoil_funct()
         txty = list(Y)
         txtx = list(X)
@@ -159,7 +159,7 @@ class MainWindow(QMainWindow):
                 txt_file.write("%s %s\n" % item)
 
     def CfgExport(self):
-        savedlg1, savedlg2 = QFileDialog.getSaveFileName(self, 'save files..', 'D:\other', '*.cfg')
+        savedlg1, savedlg2 = QFileDialog.getSaveFileName(self, 'save files..', '', '*.cfg')
         
         X, Y = airfoil_funct()
         txty = list(Y)
@@ -249,7 +249,7 @@ class PropertiesWindow(QDialog):
         self.setFixedSize(400,500)
         self.setWindowTitle('Properties')
 
-        with open('config.cfg', 'r') as txt_file:
+        with open('config.cfg') as txt_file:
             naca_properties = txt_file.read()
 
         layout = QVBoxLayout()
