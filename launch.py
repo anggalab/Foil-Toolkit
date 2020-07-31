@@ -1,6 +1,5 @@
 import sys
 import os
-
 from subprocess import Popen
 
 from PySide2 import QtCore, QtGui
@@ -9,15 +8,14 @@ from PySide2.QtGui import QIcon, QKeySequence
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-
 import matplotlib.pyplot as plt
+
 import numpy as np
 
 from naca import naca
 from funct import airfoil_funct
 
 class MainWindow(QMainWindow):
-    
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         self.title = 'Foil Toolkit'
@@ -98,6 +96,9 @@ class MainWindow(QMainWindow):
         self.inputAction = QAction( QIcon('img/input.png'),'Input', self, shortcut="Ctrl+I", statusTip="input naca type and amount of points", triggered=self.inputwindowform)
         self.propertiesAction = QAction( QIcon('img/properties.png'),'Properties', self, statusTip="show project properties", triggered=self.propertiesform)
         
+    def CreateToolBar(self):
+        self.mainToolBar = self.addToolBar('Main')
+
     def DatExport(self):
         savedlg1, savedlg2 = QFileDialog.getSaveFileName(self, 'save files..', '', '*.dat')
         X, Y = airfoil_funct()
@@ -173,9 +174,6 @@ class MainWindow(QMainWindow):
 
     def exitFile(self):
         self.close()
-        
-    def CreateToolBar(self):
-        self.mainToolBar = self.addToolBar('Main')
 
     def showAbout(self):
         QMessageBox.about(self, "about",  "Foil Toolkit v0.1.3 is open source airfoil plot generator\nIt's running on Windows and Linux environment. \nDistribution and modification under GNU GPLv3 License")
