@@ -6,7 +6,6 @@ import matplotlib.pyplot as ploting
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
 
 def linspace(start, stop, np):
     return [start+(stop-start)*i/(np-1) for i in range(np)]
@@ -20,11 +19,8 @@ def interpolation(xa, ya, queryPoints):
         wx = xa[i + 1] - xa[i - 1]
         sig = (xa[i] - xa[i - 1]) / wx
         p = sig * y2[i - 1] + 2.0
-
         y2[i] = (sig - 1.0) / p
-
         ddydx = (ya[i + 1] - ya[i]) / (xa[i + 1] - xa[i]) - (ya[i] - ya[i - 1]) / (xa[i] - xa[i - 1])
-
         u[i] = (6.0 * ddydx / wx - sig * u[i - 1]) / p
 
     y2[n - 1] = 0
@@ -112,7 +108,7 @@ def naca4(number, n, finite_TE=False, half_cosine_spacing=False):
 
     return X,Z
 
-def naca5(number, n, finite_FE=False,half_cosine_spacing=False):
+def naca5(number, n, finite_FE=False, half_cosine_spacing=False):
     naca1 = int(number[0])
     naca23 = int(number[1:3])
     naca45 = int(number[3:])
