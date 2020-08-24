@@ -176,7 +176,7 @@ class MainWindow(QMainWindow):
         self.close()
 
     def showAbout(self):
-        QMessageBox.about(self, "about",  "Foil Toolkit v0.1.3 is open source airfoil plot generator\nIt's running on Windows and Linux environment. \nDistribution and modification under GNU GPLv3 License")
+        QMessageBox.about(self, "about",  "Foil Toolkit v0.2 is open source airfoil plot generator\nIt's running on Windows and Linux environment. \nDistribution and modification under GNU GPLv3 License")
 
 class InputWindow(QDialog):
     def __init__(self):
